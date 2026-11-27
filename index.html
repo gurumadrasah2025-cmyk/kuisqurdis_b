@@ -1,0 +1,188 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Soal Online PAI</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap">
+<style>
+/* Satu kolom: identitas, soal per materi, bilah kemajuan di bawah; hasil menggantikan lembar soal */
+:root{--bg:#eef5f2;--card:#fff;--fg:#12302a;--muted:#52706a;--line:#cbded7;--accent:#0b6b55;--on-accent:#fff;--tint:#ddf0e9;--gold:#b7791f;--warn:#a8321f;--font:"Plus Jakarta Sans",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c1a17;--card:#132622;--fg:#e4f2ed;--muted:#9dbab2;--line:#29463e;--accent:#52c7a5;--on-accent:#06201a;--tint:#1b3c33;--gold:#e6b45a;--warn:#ff9c8a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0c1a17;--card:#132622;--fg:#e4f2ed;--muted:#9dbab2;--line:#29463e;--accent:#52c7a5;--on-accent:#06201a;--tint:#1b3c33;--gold:#e6b45a;--warn:#ff9c8a;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:16px/1.55 var(--font)}
+main{max-width:680px;margin:0 auto;padding-block:24px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:1.75rem;line-height:1.2;margin:0 0 6px;font-weight:800;text-wrap:balance}
+h2{font-size:1.1rem;margin:32px 0 12px;color:var(--accent)}
+p{margin:0}
+.muted{color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
+.identity{margin-top:20px;display:grid;grid-template-columns:2fr 1fr;gap:12px}
+@media (max-width:500px){.identity{grid-template-columns:1fr}}
+label.field{display:grid;gap:6px;font-weight:600;min-width:0}
+input[type=text]{font:inherit;width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)}
+fieldset{border:1px solid var(--line);background:var(--card);border-radius:12px;margin:0 0 14px;padding:16px;min-width:0;scroll-margin-top:16px}
+legend{float:left;width:100%;padding:0;margin-bottom:12px;font-weight:600;display:flex;gap:10px}
+legend b{color:var(--gold);min-width:1.8em;font-variant-numeric:tabular-nums}
+.opts{clear:both;display:grid;gap:8px}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:8px;cursor:pointer}
+.opt input{margin:5px 0 0;accent-color:var(--accent);flex:none}
+.opt:has(input:checked){background:var(--tint);border-color:var(--accent)}
+.opt:focus-within{outline:2px solid var(--accent);outline-offset:1px}
+fieldset.missing,input.missing{border:2px solid var(--warn)}
+.bar{position:sticky;bottom:0;background:var(--card);border:1px solid var(--line);border-radius:12px 12px 0 0;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));display:grid;gap:8px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+progress{width:100%;height:6px;accent-color:var(--accent)}
+#msg{color:var(--warn);font-weight:600}
+#msg:empty{display:none}
+button{font:600 1rem var(--font);background:var(--accent);color:var(--on-accent);border:0;border-radius:8px;padding:11px 20px;cursor:pointer}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+#result{text-align:center;padding:32px 20px;border-top:6px solid var(--gold)}
+#result h1{margin-bottom:4px;overflow-wrap:anywhere}
+.score{font-size:5.5rem;line-height:1.1;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums}
+dl{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;text-align:left;margin:24px 0;border-block:1px solid var(--line);padding-block:16px}
+dt{color:var(--muted)}
+dd{margin:0;font-weight:600;text-align:right;overflow-wrap:anywhere;min-width:0}
+#result button{margin-top:20px;background:transparent;color:var(--accent);border:1px solid var(--accent)}
+</style>
+
+<main>
+  <form id="quiz" novalidate>
+    <h1>Soal Online Pendidikan Agama Islam</h1>
+    <p class="muted">Tajwid, Al-Qur’an, dan Hadis. 25 soal pilihan ganda. Isi nama, pilih satu jawaban pada setiap soal, lalu tekan <strong>Kirim jawaban</strong>.</p>
+    <div class="card identity">
+      <label class="field" for="nama">Nama lengkap<input type="text" id="nama" maxlength="60" autocomplete="name"></label>
+      <label class="field" for="kelas">Kelas<input type="text" id="kelas" maxlength="20"></label>
+    </div>
+    <div id="questions"></div>
+    <div class="bar">
+      <p id="msg" role="alert"></p>
+      <progress id="prog" max="25" value="0" aria-label="Soal terjawab"></progress>
+      <div class="row"><span id="count">0 dari 25 terjawab</span><button type="submit">Kirim jawaban</button></div>
+    </div>
+  </form>
+
+  <section id="result" class="card" hidden tabindex="-1">
+    <h1 id="hello"></h1>
+    <p>Selamat, Anda sudah menyelesaikan soal.</p>
+    <p class="muted" style="margin-top:24px">Nilai Anda</p>
+    <div class="score" id="score"></div>
+    <dl>
+      <dt>Nama</dt><dd id="rNama"></dd>
+      <dt>Kelas</dt><dd id="rKelas"></dd>
+      <dt>Jawaban benar</dt><dd id="rBenar"></dd>
+      <dt>Jawaban salah</dt><dd id="rSalah"></dd>
+      <dt>Waktu selesai</dt><dd id="rWaktu"></dd>
+    </dl>
+    <p class="muted">Tangkap layar (screenshot) hasil ini, lalu kirimkan kepada guru.</p>
+    <button type="button" id="again">Mulai untuk peserta lain</button>
+  </section>
+</main>
+
+<script>
+// [soal, [a,b,c,d], indeks jawaban benar]
+const Q = [
+["Ketika berhenti (waqaf) pada kata yang berakhiran tanwin fathah, hukum bacaan mad yang umumnya berlaku adalah ....",["Mad Layin","Mad Iwad","Mad Arid Lissukun","Mad Wajib Muttasil"],1],
+["Panjang bacaan Mad Iwad ketika dibaca waqaf adalah ....",["1 harakat","2 harakat","4 harakat","6 harakat"],1],
+["Mad Layin terjadi apabila terdapat ....",["ya sukun atau wau sukun yang didahului huruf berharakat fathah","alif setelah huruf berharakat kasrah","huruf mad bertemu hamzah dalam satu kata","tanwin dhammah pada akhir kata"],0],
+["Mad Arid Lissukun terjadi karena ....",["hamzah berada setelah huruf mad dalam satu kata","huruf mad bertemu huruf bertasydid","huruf hidup di akhir kata menjadi sukun karena waqaf, didahului huruf mad","tanwin fathah dibaca ketika wasal"],2],
+["Berikut ini yang termasuk huruf layin adalah ....",["alif dan hamzah","wau sukun dan ya sukun yang didahului fathah","wau berharakat dhammah dan ya berharakat kasrah","nun sukun dan mim sukun"],1],
+["Panjang bacaan Mad Arid Lissukun dapat dibaca ....",["2, 4, atau 6 harakat","hanya 2 harakat","hanya 4 harakat","1 atau 3 harakat"],0],
+["Perbedaan utama Mad Iwad dan Mad Arid Lissukun adalah ....",["Mad Iwad terjadi karena waqaf pada tanwin fathah, sedangkan Mad Arid Lissukun karena huruf akhir menjadi sukun saat waqaf","Mad Iwad hanya terdapat di awal ayat","Mad Arid Lissukun selalu dibaca 2 harakat","keduanya hanya dibaca ketika wasal"],0],
+["Apabila seorang siswa berhenti pada kata yang mengandung Mad Layin, cara membaca yang tepat adalah ....",["memendekkan tanpa ukuran","membaca dengan dengung 2 harakat","memanjangkan sesuai ketentuan Mad Layin, yaitu 2, 4, atau 6 harakat","mengganti huruf terakhir dengan hamzah"],2],
+["Mengapa ketepatan panjang harakat penting dalam membaca Al-Qur’an?",["Agar bacaan terdengar lebih cepat","Agar kaidah tajwid dan ketepatan bacaan terjaga","Agar semua huruf dibaca sama panjang","Agar tidak perlu memperhatikan makhraj"],1],
+["Dalam Surah Al-Fajr ayat 15, manusia yang mendapat kelapangan rezeki sering menganggap bahwa ....",["Allah sedang menghinakannya","dirinya tidak perlu bersyukur","Allah memuliakannya","harta tidak memiliki manfaat"],2],
+["Menurut kandungan Surah Al-Fajr ayat 16, ketika rezeki seseorang disempitkan, sebagian manusia menganggap dirinya ....",["dimuliakan","dihinakan","selalu diberi pahala","terbebas dari ujian"],1],
+["Surah Al-Fajr ayat 17–18 mengingatkan manusia agar ....",["mengumpulkan harta sebanyak-banyaknya","mengabaikan anak yatim","tidak saling membantu","memuliakan anak yatim dan mendorong memberi makan orang miskin"],3],
+["Pesan utama Surah Al-Baqarah ayat 254 adalah ajakan untuk ....",["berinfak sebelum datang hari ketika tidak ada jual beli, persahabatan, dan syafaat","menunda infak sampai kaya","menyimpan seluruh harta untuk diri sendiri","berinfak hanya ketika diminta"],0],
+["Dalam Surah Al-Baqarah ayat 261, perumpamaan orang yang berinfak di jalan Allah adalah seperti ....",["pohon yang tidak berbuah","biji yang menumbuhkan tujuh tangkai, pada setiap tangkai terdapat seratus biji","hujan yang menyebabkan banjir","gunung yang menjulang tinggi"],1],
+["Berdasarkan perumpamaan dalam Al-Baqarah ayat 261, satu kebaikan dapat dilipatgandakan menjadi ....",["7","70","700","1.000"],2],
+["Sikap yang sesuai dengan kandungan Surah Al-Fajr ayat 17–18 adalah ....",["membiarkan teman yang kesulitan","menggunakan harta hanya untuk pamer","membantu anak yatim dan mengajak orang lain peduli kepada fakir miskin","menilai kemuliaan seseorang dari banyaknya harta"],2],
+["Rina memiliki uang saku lebih. Ia menyisihkan sebagian untuk membantu teman yang kesulitan membeli alat tulis. Perbuatan Rina merupakan contoh ....",["riya","infak di jalan Allah","pemborosan","takabur"],1],
+["Dalam hadis riwayat Muslim dari Abu Hurairah, Rasulullah saw. menjelaskan bahwa sedekah ....",["mengurangi harta","tidak mengurangi harta","hanya diterima jika banyak","harus diumumkan"],1],
+["Hadis tentang sedekah yang tidak mengurangi harta mengajarkan bahwa seorang muslim hendaknya ....",["takut mengeluarkan hartanya","bersedekah dengan ikhlas dan tidak khawatir kehilangan keberkahan","bersedekah agar dipuji","memberi hanya kepada orang kaya"],1],
+["Dalam hadis riwayat Bukhari dari Hakim bin Hizam, tangan di atas lebih baik daripada tangan di bawah. Maksud ungkapan tersebut adalah ....",["orang yang memberi lebih baik daripada orang yang meminta","orang yang meminta lebih mulia daripada pemberi","tangan kanan selalu lebih kuat","orang kaya tidak perlu bersedekah"],0],
+["Pesan hadis Hakim bin Hizam tentang memulai pemberian dari orang yang menjadi tanggungan mengajarkan agar ....",["mengutamakan orang jauh daripada keluarga","memenuhi tanggung jawab nafkah kepada keluarga terlebih dahulu","tidak membantu orang lain","memberikan seluruh harta sekaligus"],1],
+["Menurut hadis Hakim bin Hizam, sebaik-baik sedekah adalah sedekah dari ....",["orang yang masih berkecukupan setelah memenuhi kebutuhan","orang yang berutang banyak","orang yang mengambil hak orang lain","orang yang ingin dipuji"],0],
+["Sikap yang paling sesuai dengan ajaran hadis tentang tangan di atas lebih baik daripada tangan di bawah adalah ....",["selalu meminta bantuan meskipun mampu","berusaha mandiri dan membantu orang lain sesuai kemampuan","menolak semua bentuk bantuan","memberi agar dikenal dermawan"],1],
+["Doni ingin bersedekah, tetapi uang yang dimilikinya juga diperlukan untuk memenuhi kebutuhan pokok keluarganya. Tindakan yang paling tepat sesuai pesan hadis adalah ....",["memberikan seluruh uangnya","mendahulukan kebutuhan dan tanggung jawab keluarganya, lalu bersedekah sesuai kemampuan","tidak perlu membantu siapa pun selamanya","meminjam uang agar dapat bersedekah banyak"],1],
+["Perilaku yang menunjukkan keikhlasan dalam berinfak adalah ....",["menceritakan pemberian agar dipuji","mengungkit-ungkit bantuan","memberi tanpa mengharapkan pujian manusia","memilih penerima berdasarkan popularitas"],2]
+];
+const SECTIONS = {0:"Bagian A: Tajwid (soal 1–9)",9:"Bagian B: Al-Qur’an (soal 10–17)",17:"Bagian C: Hadis (soal 18–25)"};
+const KEY = "kuis-pai-v1";
+const $ = id => document.getElementById(id);
+const form = $("quiz"), box = $("questions");
+
+Q.forEach(([text, opts], i) => {
+  if (SECTIONS[i]) { const h = document.createElement("h2"); h.textContent = SECTIONS[i]; box.append(h); }
+  const fs = document.createElement("fieldset"); fs.id = "s" + i;
+  fs.innerHTML = `<legend><b>${i+1}.</b><span>${text}</span></legend><div class="opts">` +
+    opts.map((o, j) => `<label class="opt"><input type="radio" id="q${i}_${j}" name="q${i}" value="${j}"><span>${"abcd"[j]}. ${o}</span></label>`).join("") + `</div>`;
+  box.append(fs);
+});
+
+const answers = () => Q.map((_, i) => { const c = form.querySelector(`input[name="q${i}"]:checked`); return c ? Number(c.value) : null; });
+const save = data => { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {} };
+
+function update() {
+  const n = answers().filter(a => a !== null).length;
+  $("prog").value = n; $("count").textContent = `${n} dari ${Q.length} terjawab`;
+}
+function show(r) {
+  $("hello").textContent = r.nama;
+  $("score").textContent = r.benar * 100 / Q.length;
+  $("rNama").textContent = r.nama;
+  $("rKelas").textContent = r.kelas || "-";
+  $("rBenar").textContent = `${r.benar} dari ${Q.length}`;
+  $("rSalah").textContent = Q.length - r.benar;
+  $("rWaktu").textContent = r.waktu;
+  form.hidden = true; $("result").hidden = false;
+  $("result").focus({preventScroll:true}); window.scrollTo(0, 0);
+}
+
+form.addEventListener("input", e => {
+  e.target.classList.remove("missing");
+  e.target.closest("fieldset")?.classList.remove("missing");
+  $("msg").textContent = "";
+  update();
+  save({nama:$("nama").value, kelas:$("kelas").value, jawab:answers()});
+});
+
+form.addEventListener("submit", e => {
+  e.preventDefault();
+  const nama = $("nama").value.trim(), a = answers();
+  if (!nama) {
+    $("msg").textContent = "Isi nama lengkap terlebih dahulu.";
+    $("nama").classList.add("missing"); $("nama").focus(); return;
+  }
+  const kosong = a.map((v, i) => v === null ? i : -1).filter(i => i >= 0);
+  if (kosong.length) {
+    $("msg").textContent = `Masih ada ${kosong.length} soal belum dijawab. Lanjutkan dari soal nomor ${kosong[0]+1}.`;
+    kosong.forEach(i => $("s" + i).classList.add("missing"));
+    $("s" + kosong[0]).scrollIntoView({block:"start"});
+    $("q" + kosong[0] + "_0").focus({preventScroll:true}); return;
+  }
+  const hasil = {
+    nama, kelas:$("kelas").value.trim(),
+    benar:a.filter((v, i) => v === Q[i][2]).length,
+    waktu:new Date().toLocaleString("id-ID", {dateStyle:"medium", timeStyle:"short"})
+  };
+  save({hasil}); show(hasil);
+});
+
+$("again").addEventListener("click", () => {
+  try { localStorage.removeItem(KEY); } catch (e) {}
+  form.reset(); update(); $("msg").textContent = "";
+  $("result").hidden = true; form.hidden = false; window.scrollTo(0, 0);
+});
+
+try {
+  const d = JSON.parse(localStorage.getItem(KEY));
+  if (d?.hasil) show(d.hasil);
+  else if (d) {
+    $("nama").value = d.nama || ""; $("kelas").value = d.kelas || "";
+    (d.jawab || []).forEach((v, i) => { if (v !== null && $(`q${i}_${v}`)) $(`q${i}_${v}`).checked = true; });
+  }
+} catch (e) {}
+update();
+</script>
+
+</body></html>
